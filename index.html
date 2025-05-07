@@ -981,7 +981,7 @@
 
             <div id="resizeImagePreview" class="image-preview">
                  <h3>Preview</h3>
-                 <!-- Resizer preview will just show one image at a time - the result -->
+                 <!-- Resizer preview will show original on upload, then result after resize -->
                  <img id="resizedImage" src="" alt="Resized Image Preview">
             </div>
 
@@ -1041,7 +1041,7 @@
 
             <div id="convertImagePreview" class="image-preview">
                  <h3>Preview</h3>
-                 <!-- Converter preview will just show one image at a time - the result -->
+                 <!-- Converter preview will show original on upload, then result after convert -->
                 <img id="convertedImage" src="" alt="Converted Image Preview">
             </div>
 
@@ -1410,8 +1410,22 @@
             const sections = document.querySelectorAll('main > section');
             const navLinks = document.querySelectorAll('header nav a, #homepage-section a.tool-link, #homepage-section .tool-card h3 a, footer a[href^="#"]'); // Added .tool-card h3 a
 
+            let currentActiveSectionId = null; // Variable to track the currently displayed section's ID
+
             function showSection(id) {
                 console.log(`[NAV] Attempting to show section: ${id}`);
+
+                // Reset the PREVIOUSLY active tool section if it's different from the new one
+                if (currentActiveSectionId && currentActiveSectionId !== id) {
+                    const nonToolSectionIds = ['homepage-section', 'about-section', 'contact-section', 'privacy-section'];
+                    // Check if the section being navigated AWAY FROM is a tool section
+                    if (currentActiveSectionId.endsWith('-section') && !nonToolSectionIds.includes(currentActiveSectionId)) {
+                        const toolIdToReset = currentActiveSectionId.replace('-section', '');
+                        console.log(`[NAV] Navigating away from ${currentActiveSectionId}. Resetting tool: ${toolIdToReset}`);
+                        resetToolState(toolIdToReset); // Call reset for the tool being left
+                    }
+                }
+
                 sections.forEach(section => {
                     section.style.display = 'none';
                 });
@@ -1430,9 +1444,12 @@
                          window.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
                      });
                     console.log(`[NAV] Section shown: ${id}`);
+                    currentActiveSectionId = id; // Update the current active section ID
                 } else {
                     console.warn(`[NAV] Section with ID "${id}" not found. Showing homepage.`);
-                    showSection('homepage-section');
+                    // If showing homepage, and if the previous section was a tool, it should have been reset already by the block above.
+                    showSection('homepage-section'); // Recursive call, ensure base case.
+                    // currentActiveSectionId will be set to 'homepage-section' by the recursive call if targetSection was null.
                 }
             }
 
@@ -1454,6 +1471,9 @@
                 console.log("[NAV] Handling navigation. Current hash:", window.location.hash);
                 const currentHash = window.location.hash;
                 const targetId = currentHash ? currentHash.substring(1) : 'homepage-section';
+
+                // On initial load, currentActiveSectionId will be null.
+                // showSection will handle setting it after displaying the section.
                 showSection(targetId);
             }
 
@@ -1842,25 +1862,34 @@
                  const newDimensionsSpan = document.getElementById('newDimensions');
                  const originalSizeSpan = document.getElementById('resizeOriginalSize');
                  const resizedSizeSpan = document.getElementById('resizedSize');
-                 const previewSection = document.getElementById('resizeImagePreview');
-                 const resizedImage = document.getElementById('resizedImage');
+                 const previewSectionEl = document.getElementById('resizeImagePreview'); // Get section
+                 const resizedImage = document.getElementById('resizedImage'); // Get image element
                  const widthInput = document.getElementById('resizeWidth');
                  const heightInput = document.getElementById('resizeHeight');
                  const applyBtn = document.getElementById('applyResizeBtn');
 
 
-                 if (!imageInfoDiv || !originalFileNameSpan || !originalDimensionsSpan || !originalSizeSpan || !newDimensionsSpan || !resizedSizeSpan || !previewSection || !resizedImage || !widthInput || !heightInput || !applyBtn) { console.error("[SETUP:RESIZER] Missing required UI elements."); alert("Error: Tool UI could not be initialized."); return; }
+                 if (!imageInfoDiv || !originalFileNameSpan || !originalDimensionsSpan || !originalSizeSpan || !newDimensionsSpan || !resizedSizeSpan || !previewSectionEl || !resizedImage || !widthInput || !heightInput || !applyBtn) { console.error("[SETUP:RESIZER] Missing required UI elements."); alert("Error: Tool UI could not be initialized."); return; }
                  if (!originalResizeImage || !(originalResizeImage.naturalWidth > 0) || !(originalResizeImage.naturalHeight > 0)) { console.error("[SETUP:RESIZER] originalResizeImage not ready."); alert("Error loading image dimensions."); return; }
                  const originalResizeWidth = originalResizeImage.naturalWidth; const originalResizeHeight = originalResizeImage.naturalHeight; console.log(`[SETUP:RESIZER] Original dimensions ${originalResizeWidth}x${originalResizeHeight}.`);
 
                  originalFileNameSpan.textContent = file.name; originalDimensionsSpan.textContent = `${originalResizeWidth}x${originalResizeHeight}`; originalSizeSpan.textContent = formatBytes(file.size); newDimensionsSpan.textContent = '-'; resizedSizeSpan.textContent = '-'; imageInfoDiv.style.display = 'block'; console.log("[SETUP:RESIZER] Info updated.");
 
-                 // resizedImage should be cleared initially
-                 // Revoke old blob URL before clearing
-                 if (resizedImage.src && resizedImage.src.startsWith('blob:')) { try { URL.revokeObjectURL(resizedImage.src); } catch (e) { console.error(`[SETUP:RESIZER] Error revoking old resized preview blob ${resizedImage.src}:`, e); } }
-                 resizedImage.src = ''; resizedImage.alt = ''; resizedImage.style.display = 'none'; console.log("[SETUP:RESIZER] Preview image cleared and hidden.");
+                 // resizedImage should show the original image on upload for preview
+                 if (resizedImage.src && resizedImage.src.startsWith('blob:')) {
+                     try { URL.revokeObjectURL(resizedImage.src); }
+                     catch (e) { console.error(`[SETUP:RESIZER] Error revoking old resized preview blob ${resizedImage.src}:`, e); }
+                 }
+                 resizedImage.src = originalResizeImage.src; // Show the original image
+                 resizedImage.alt = `Original Image Preview (${file.name})`;
+                 resizedImage.style.display = 'block';
+                 console.log("[SETUP:RESIZER] Original preview image set and displayed.");
 
-                 const previewSectionEl = document.getElementById('resizeImagePreview'); if(previewSectionEl) { previewSectionEl.style.display = 'none'; console.log("[SETUP:RESIZER] Preview section hidden."); } else console.warn("[SETUP:RESIZER] resizeImagePreview section not found.");
+                 if(previewSectionEl) {
+                     previewSectionEl.style.display = 'block'; // Show the preview section
+                     console.log("[SETUP:RESIZER] Preview section displayed.");
+                 } else console.warn("[SETUP:RESIZER] resizeImagePreview section not found.");
+
                  widthInput.value = originalResizeWidth; widthInput.min = 1; heightInput.value = originalResizeHeight; heightInput.min = 1; console.log(`[SETUP:RESIZER] Dimension inputs pre-filled with ${widthInput.value}x${heightInput.value}.`);
 
                  // Download link cleared by general reset logic
@@ -1877,22 +1906,31 @@
                  const newFormatSpan = document.getElementById('newFormat');
                  const originalSizeSpan = document.getElementById('convertOriginalSize');
                  const convertedSizeSpan = document.getElementById('convertedSize');
-                 const previewSection = document.getElementById('convertImagePreview');
-                 const convertedImage = document.getElementById('convertedImage');
+                 const previewSectionEl = document.getElementById('convertImagePreview'); // Get section
+                 const convertedImage = document.getElementById('convertedImage'); // Get image element
                  const formatSelect = document.getElementById('outputFormat');
                  const applyBtn = document.getElementById('applyConvertBtn');
 
 
-                 if (!imageInfoDiv || !originalFileNameSpan || !originalFormatSpan || !originalSizeSpan || !newFormatSpan || !convertedSizeSpan || !previewSection || !convertedImage || !formatSelect || !applyBtn) { console.error("[SETUP:CONVERTER] Missing required UI elements."); alert("Error: Tool UI could not be initialized."); return; }
+                 if (!imageInfoDiv || !originalFileNameSpan || !originalFormatSpan || !originalSizeSpan || !newFormatSpan || !convertedSizeSpan || !previewSectionEl || !convertedImage || !formatSelect || !applyBtn) { console.error("[SETUP:CONVERTER] Missing required UI elements."); alert("Error: Tool UI could not be initialized."); return; }
 
                  originalFileNameSpan.textContent = file.name; originalFormatSpan.textContent = file.type.split('/')[1]?.toUpperCase() || 'Unknown'; originalSizeSpan.textContent = formatBytes(file.size); newFormatSpan.textContent = '-'; convertedSizeSpan.textContent = '-'; imageInfoDiv.style.display = 'block'; console.log("[SETUP:CONVERTER] Info updated.");
 
-                 // convertedImage should be cleared initially
-                 // Revoke old blob URL before clearing
-                 if (convertedImage.src && convertedImage.src.startsWith('blob:')) { try { URL.revokeObjectURL(convertedImage.src); } catch (e) { console.error(`[SETUP:CONVERTER] Error revoking old converted preview blob ${convertedImage.src}:`, e); } }
-                 convertedImage.src = ''; convertedImage.alt = ''; convertedImage.style.display = 'none'; console.log("[SETUP:CONVERTER] Preview image cleared and hidden.");
+                 // convertedImage should show the original image on upload for preview
+                 if (convertedImage.src && convertedImage.src.startsWith('blob:')) {
+                     try { URL.revokeObjectURL(convertedImage.src); }
+                     catch (e) { console.error(`[SETUP:CONVERTER] Error revoking old converted preview blob ${convertedImage.src}:`, e); }
+                 }
+                 convertedImage.src = originalConvertImage.src; // Show the original image
+                 convertedImage.alt = `Original Image Preview (${file.name})`;
+                 convertedImage.style.display = 'block';
+                 console.log("[SETUP:CONVERTER] Original preview image set and displayed.");
 
-                 const previewSectionEl = document.getElementById('convertImagePreview'); if(previewSectionEl) { previewSectionEl.style.display = 'none'; console.log("[SETUP:CONVERTER] Preview section hidden."); } else console.warn("[SETUP:CONVERTER] convertImagePreview section not found.");
+                 if(previewSectionEl) {
+                     previewSectionEl.style.display = 'block'; // Show the preview section
+                     console.log("[SETUP:CONVERTER] Preview section displayed.");
+                 } else console.warn("[SETUP:CONVERTER] convertImagePreview section not found.");
+
                  formatSelect.value = 'image/jpeg'; console.log("[SETUP:CONVERTER] Format select reset to JPG.");
 
                  // Download link cleared by general reset logic
