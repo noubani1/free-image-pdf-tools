@@ -84,8 +84,7 @@
         header h1 {
             margin: 0;
             font-size: 1.5rem;
-            /* color: var(--white-color); /* Original white color */
-            color: var(--info-color); /* UPDATED: Match menu link color */
+            color: var(--info-color); /* Match menu link color */
              /* text-align: left; /* Can keep or remove, flexbox handles alignment */
         }
 
@@ -125,7 +124,7 @@
         }
         /* Ensure header h1 retains its updated color */
         header h1 {
-            color: var(--info-color); /* Re-apply here to ensure specificity if needed */
+            color: var(--info-color);
         }
 
 
@@ -549,6 +548,16 @@
             margin-top: 0;
             font-size: 1.3rem;
         }
+        /* Styling for links within tool card h3 */
+        #homepage-section .tool-card h3 a {
+            color: inherit; /* Inherit color from h3 (var(--dark-color)) */
+            text-decoration: none; /* Remove underline by default */
+        }
+        #homepage-section .tool-card h3 a:hover {
+            text-decoration: underline; /* Add underline on hover */
+            color: var(--primary-color); /* Change color on hover */
+        }
+
 
         #homepage-section .tool-card p {
             font-size: 0.95rem;
@@ -660,6 +669,7 @@
                 font-size: 1.8rem;
             }
 
+
             h2 {
                 font-size: 1.5rem;
             }
@@ -755,7 +765,6 @@
             <!-- Website name/title section -->
             <div class="site-title">
                 <!-- Link the site title to the homepage -->
-                <!-- Removed inline style for color from the link - h1 style will control text color -->
                 <a href="#homepage-section" style="text-decoration: none;">
                     <h1>FreeImagePDFTools</h1>
                 </a>
@@ -793,37 +802,37 @@
                 <!-- Image Tools -->
                 <div class="tool-card">
                     <div class="icon-container">🖼️</div> <!-- Placeholder Icon -->
-                    <h3>Image Compressor</h3>
+                    <h3><a href="#image-compressor-section">Image Compressor</a></h3>
                     <p>Quickly reduce the file size of your images (JPG, PNG) while maintaining quality.</p>
                     <a href="#image-compressor-section" class="tool-link btn">Use Tool</a>
                 </div>
                 <div class="tool-card">
                     <div class="icon-container">📐</div> <!-- Placeholder Icon -->
-                    <h3>Image Resizer</h3>
+                    <h3><a href="#image-resizer-section">Image Resizer</a></h3>
                     <p>Change the dimensions of your images to fit your needs by specifying width and height.</p>
                     <a href="#image-resizer-section" class="tool-link btn">Use Tool</a>
                 </div>
                  <div class="tool-card">
                     <div class="icon-container">🔄</div> <!-- Placeholder Icon -->
-                    <h3>Image Converter</h3>
+                    <h3><a href="#image-converter-section">Image Converter</a></h3>
                     <p>Convert images between different formats like JPG, PNG, and WebP.</p>
                     <a href="#image-converter-section" class="tool-link btn">Use Tool</a>
                 </div>
                  <div class="tool-card">
                      <div class="icon-container">✂️</div> <!-- Placeholder Icon -->
-                    <h3>Image Cropper</h3>
+                    <h3><a href="#image-cropper-section">Image Cropper</a></h3>
                     <p>Select and crop a specific area of your image using your mouse.</p>
                     <a href="#image-cropper-section" class="tool-link btn">Use Tool</a>
                 </div>
                  <div class="tool-card">
                      <div class="icon-container">↩️</div> <!-- Placeholder Icon -->
-                    <h3>Rotate & Flip Image</h3>
+                    <h3><a href="#image-rotate-flip-section">Rotate & Flip Image</a></h3>
                     <p>Rotate images by 90 degrees or flip them horizontally or vertically.</p>
                     <a href="#image-rotate-flip-section" class="tool-link btn">Use Tool</a>
                 </div>
                  <div class="tool-card">
                      <div class="icon-container">✨</div> <!-- Placeholder Icon -->
-                    <h3>Image Filters</h3>
+                    <h3><a href="#image-filters-section">Image Filters</a></h3>
                     <p>Apply basic filters like Grayscale to your images.</p>
                     <a href="#image-filters-section" class="tool-link btn">Use Tool</a>
                 </div>
@@ -832,27 +841,27 @@
                 <!-- PDF Tools (Placeholders) -->
                  <div class="tool-card">
                     <div class="icon-container">📄</div> <!-- Placeholder Icon -->
-                    <h3>Merge PDF</h3>
+                    <h3><a href="#">Merge PDF</a></h3>
                     <p>Combine multiple PDF files into a single document.</p>
-                    <a href="#" class="tool-link btn btn-secondary">Coming Soon</a> <!-- Client-side PDF manipulation is complex -->
+                    <a href="#" class="tool-link btn btn-secondary">Coming Soon</a>
                 </div>
                  <div class="tool-card">
                     <div class="icon-container">📄</div> <!-- Placeholder Icon -->
-                    <h3>Split PDF</h3>
+                    <h3><a href="#">Split PDF</a></h3>
                     <p>Extract specific pages or page ranges from a PDF.</p>
-                    <a href="#" class="tool-link btn btn-secondary">Coming Soon</a> <!-- Client-side PDF manipulation is complex -->
+                    <a href="#" class="tool-link btn btn-secondary">Coming Soon</a>
                 </div>
                  <div class="tool-card">
                      <div class="icon-container">📄➡️🖼️</div> <!-- Placeholder Icon -->
-                    <h3>PDF to JPG</h3>
+                    <h3><a href="#">PDF to JPG</a></h3>
                     <p>Convert each page of a PDF file into individual JPG images.</p>
-                    <a href="#" class="tool-link btn btn-secondary">Coming Soon</a> <!-- Client-side PDF handling requires libraries -->
+                    <a href="#" class="tool-link btn btn-secondary">Coming Soon</a>
                 </div>
                  <div class="tool-card">
                      <div class="icon-container">🖼️➡️📄</div> <!-- Placeholder Icon -->
-                    <h3>JPG to PDF</h3>
+                    <h3><a href="#">JPG to PDF</a></h3>
                     <p>Combine multiple JPG images into a single PDF file.</p>
-                    <a href="#" class="tool-link btn btn-secondary">Coming Soon</a> <!-- Client-side PDF creation requires libraries -->
+                    <a href="#" class="tool-link btn btn-secondary">Coming Soon</a>
                 </div>
                  <!-- Add more tool cards here -->
             </div>
@@ -1399,7 +1408,7 @@
 
             // --- SPA Navigation Logic ---
             const sections = document.querySelectorAll('main > section');
-            const navLinks = document.querySelectorAll('header nav a, #homepage-section a.tool-link, footer a[href^="#"]');
+            const navLinks = document.querySelectorAll('header nav a, #homepage-section a.tool-link, #homepage-section .tool-card h3 a, footer a[href^="#"]'); // Added .tool-card h3 a
 
             function showSection(id) {
                 console.log(`[NAV] Attempting to show section: ${id}`);
@@ -3003,6 +3012,16 @@
                              window.location.hash = targetHash;
                         } else {
                              console.log(`[NAV] Nav link clicked (${targetHash}) for current section. Allowing default scroll.`);
+                             // If it's the same hash, still scroll to the top of the section, after header
+                             if (targetHash !== '#homepage-section') { // Don't re-scroll for homepage if already there
+                                const targetSection = document.getElementById(targetHash.substring(1));
+                                if (targetSection) {
+                                    e.preventDefault(); // Prevent default jump
+                                    const headerHeight = document.querySelector('header')?.offsetHeight || 60;
+                                    const targetScrollTop = Math.max(0, targetSection.offsetTop - headerHeight);
+                                    window.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+                                }
+                             }
                         }
                     }
                 });
